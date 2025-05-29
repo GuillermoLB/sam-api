@@ -1,6 +1,25 @@
 import json
+import logging
 
-# import requests
+from fastapi import FastAPI
+from mangum import Mangum
+
+# Set up proper logger
+logger = logging.getLogger("lambda-handler")
+logger.setLevel(logging.DEBUG)
+
+app = FastAPI(
+    title="Authentication API",
+    description="""
+    """,
+    version="1.0.0",
+    openapi_tags=[
+        {
+            "name": "Users",
+            "description": "User management and authentication",
+        },
+    ]
+)
 
 
 def lambda_handler(event, context):
@@ -25,18 +44,22 @@ def lambda_handler(event, context):
         Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
     """
 
-    # try:
-    #     ip = requests.get("http://checkip.amazonaws.com/")
-    # except requests.RequestException as e:
-    #     # Send some context about this error to Lambda Logs
-    #     print(e)
+    # Use the logger you've defined
+    logger.debug(f"API Event: {event}")
+    
+    # Rest of your handler code...
+    handler = Mangum(app)
+    response = handler(event, context)
+    return response
 
-    #     raise e
+@app.get("/")
+def health_check():
+    return {"status": "OK"}
 
-    return {
-        "statusCode": 200,
-        "body": json.dumps({
-            "message": "hello world",
-            # "location": ip.text.replace("\n", "")
-        }),
-    }
+@app.get("/users")
+def get_users():
+    return {"users": ["user1", "user2"]}
+
+@app.post("/items")
+def create_item():
+    return {"status": "created"}

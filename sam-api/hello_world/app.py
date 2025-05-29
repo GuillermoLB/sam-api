@@ -58,7 +58,7 @@ def health_check():
 
 @app.get("/users")
 def get_users():
-    return {"users": ["user1", "user4"]}
+    return {"users": ["user1", "user2"]}
 
 @app.post("/items")
 def create_item():
